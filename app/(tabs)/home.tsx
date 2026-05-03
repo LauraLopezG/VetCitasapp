@@ -1,84 +1,123 @@
 import React from "react";
-import { View, Text, Image, Pressable, StyleSheet, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
+import { useRouter } from "expo-router"; // navegación
 
-export default function Home() {
+export default function HomeScreen() {
   const router = useRouter();
-
-  // Control para mostrar/ocultar botones extra
-  const showExtraButtons = false; // ← cámbialo a true si quieres que aparezcan
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.greeting}>Hola, Laura!</Text>
-      <Text style={styles.subtitle}>¿Qué deseas hacer hoy?</Text>
+      
+      <Text style={styles.saludo}>Hola, Laura! ¿Qué deseas hacer hoy?</Text>
 
-      {/* Foto de la mascota */}
-      <Image source={require("../../assets/milo.png")} style={styles.petImage} />
-
-      <View style={styles.petInfo}>
-        <Text style={styles.detail}>Nombre: Milo</Text>
-        <Text style={styles.detail}>Tipo: Criollo</Text>
-        <Text style={styles.detail}>Edad: 6 meses</Text>
-        <Text style={styles.detail}>Peso: 2 kg</Text>
+     
+      <View style={styles.logoContainer}>
+        <Image source={require("../../assets/logo.png")} style={styles.logo} />
+        <Text style={styles.frase}>Cuidamos a tus mascotas con amor 💚</Text>
       </View>
 
-      {/* Botones principales */}
-      <View style={styles.grid}>
-        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/profile")}>
+       <TouchableOpacity style={styles.button} onPress={() => router.push("/pets")}>
+          <Image source={require("../../assets/datos.png")} style={styles.icon} />
+          <Text style={styles.buttonText}>Mascotas</Text>
+        </TouchableOpacity>
+
+      
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/profile")}>
           <Image source={require("../../assets/perfil.png")} style={styles.icon} />
           <Text style={styles.buttonText}>Perfil</Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/notifications")}>
-          <Image source={require("../../assets/Notificacion.png")} style={styles.icon} />
-          <Text style={styles.buttonText}>Notificaciones</Text>
-        </Pressable>
-
-        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/schedule")}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/schedule")}>
           <Image source={require("../../assets/agendar.png")} style={styles.icon} />
           <Text style={styles.buttonText}>Agendar Cita</Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/appointments")}>
-          <Image source={require("../../assets/citaspro.png")} style={styles.icon} />
-          <Text style={styles.buttonText}>Citas Programadas</Text>
-        </Pressable>
-
-        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/history")}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/history")}>
           <Image source={require("../../assets/Historial.png")} style={styles.icon} />
           <Text style={styles.buttonText}>Historial</Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/medications")}>
-          <Image source={require("../../assets/medicamentos.png")} style={styles.icon} />
-          <Text style={styles.buttonText}>Medicamentos</Text>
-        </Pressable>
-
-        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/results")}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/results")}>
           <Image source={require("../../assets/resultados.png")} style={styles.icon} />
           <Text style={styles.buttonText}>Resultados</Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable style={styles.button} onPress={() => router.push("/(tabs)/payments")}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/notifications")}>
+          <Image source={require("../../assets/Notificacion.png")} style={styles.icon} />
+          <Text style={styles.buttonText}>Notificaciones</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/appointments")}>
+          <Image source={require("../../assets/citaspro.png")} style={styles.icon} />
+          <Text style={styles.buttonText}>Citas Programadas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/medications")}>
+          <Image source={require("../../assets/medicamentos.png")} style={styles.icon} />
+          <Text style={styles.buttonText}>Medicamentos</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/payments")}>
           <Image source={require("../../assets/pagos.png")} style={styles.icon} />
           <Text style={styles.buttonText}>Pagos</Text>
-        </Pressable>
+        </TouchableOpacity>
+
+
       </View>
-      
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#E8F5E9", padding: 20 },
-  greeting: { fontSize: 22, fontWeight: "bold", color: "#2E7D32" },
-  subtitle: { fontSize: 16, color: "#555", marginBottom: 20 },
-  petImage: { width: 120, height: 120, borderRadius: 60, alignSelf: "center", marginBottom: 15 },
-  petInfo: { backgroundColor: "#fff", borderRadius: 8, padding: 15, marginBottom: 20 },
-  detail: { fontSize: 14, color: "#333" },
-  grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
-  button: { width: "48%", flexDirection: "row", alignItems: "center", backgroundColor: "#fff", padding: 12, borderRadius: 8, marginBottom: 12 },
-  icon: { width: 28, height: 28, marginRight: 8 },
-  buttonText: { fontSize: 14, fontWeight: "600", color: "#2E7D32" },
+  container: {
+    flex: 1,
+    backgroundColor: "#F5F5F5",
+    padding: 16,
+  },
+  saludo: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 12,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    marginBottom: 8,
+  },
+  frase: {
+    fontSize: 16,
+    fontStyle: "italic",
+    color: "#2E7D32",
+    textAlign: "center",
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  button: {
+    width: "48%",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  icon: {
+    width: 28,
+    height: 28,
+    marginRight: 8,
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#2E7D32",
+  },
 });
