@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 
 export default function AddPet() {
   const [nombre, setNombre] = useState("");
@@ -7,33 +15,40 @@ export default function AddPet() {
   const [edad, setEdad] = useState("");
   const [peso, setPeso] = useState("");
   const [usuarioId, setUsuarioId] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleCreate = () => {
-    fetch("http://192.168.0.23/vetcitas_api/api/mascotas/create.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nombre,
-        tipo,
-        edad,
-        peso,
-        usuario_id: usuarioId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          alert("Mascota creada correctamente");
-          setNombre("");
-          setTipo("");
-          setEdad("");
-          setPeso("");
-          setUsuarioId("");
-        } else {
-          alert("Error: " + data.error);
-        }
-      })
-      .catch((err) => console.error(err));
+  const handleCreate = async () => {
+    if (!nombre || !tipo || !edad || !peso || !usuarioId) {
+      alert("Por favor completa todos los campos");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("http://192.168.0.23/vetcitas_api/api/mascotas/create.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, tipo, edad, peso, usuario_id: usuarioId }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Mascota creada correctamente");
+        setNombre("");
+        setTipo("");
+        setEdad("");
+        setPeso("");
+        setUsuarioId("");
+      } else {
+        alert("Error: " + data.error);
+      }
+    } catch (err) {
+      alert("Error de conexión con el servidor");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,14 +57,50 @@ export default function AddPet() {
       <Text style={styles.title}>Datos de la mascota</Text>
       <Text style={styles.subtitle}>Completa la información de tu mascota 🐶🐱</Text>
 
-      <TextInput placeholder="Nombre" style={styles.input} value={nombre} onChangeText={setNombre} />
-      <TextInput placeholder="Tipo" style={styles.input} value={tipo} onChangeText={setTipo} />
-      <TextInput placeholder="Edad" style={styles.input} value={edad} onChangeText={setEdad} />
-      <TextInput placeholder="Peso" style={styles.input} value={peso} onChangeText={setPeso} />
-      <TextInput placeholder="ID Usuario" style={styles.input} value={usuarioId} onChangeText={setUsuarioId} />
+      <TextInput
+        placeholder="Nombre"
+        style={styles.input}
+        value={nombre}
+        onChangeText={setNombre}
+      />
+      <TextInput
+        placeholder="Tipo"
+        style={styles.input}
+        value={tipo}
+        onChangeText={setTipo}
+      />
+      <TextInput
+        placeholder="Edad"
+        style={styles.input}
+        value={edad}
+        onChangeText={setEdad}
+        keyboardType="numeric"
+      />
+      <TextInput
+        placeholder="Peso"
+        style={styles.input}
+        value={peso}
+        onChangeText={setPeso}
+        keyboardType="numeric"
+      />
+      <TextInput
+        placeholder="ID Usuario"
+        style={styles.input}
+        value={usuarioId}
+        onChangeText={setUsuarioId}
+        keyboardType="numeric"
+      />
 
-      <TouchableOpacity style={styles.button} onPress={handleCreate}>
-        <Text style={styles.buttonText}>Guardar Mascota</Text>
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={handleCreate}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Guardar Mascota</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -74,6 +125,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 10,
+  },
+  buttonDisabled: {
+    backgroundColor: "#A5D6A7",
   },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
 });
