@@ -1,16 +1,43 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from "react-native";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Index() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    // Aquí podrías validar credenciales con tu backend
-    // Si todo está correcto, navega al Home
-    router.replace("/home");
+ const handleLogin = async () => {
+  try {
+    const response = await fetch("http://192.168.0.23/vetcitas_api/api/usuarios/login.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    });
+
+    const data = await response.json();
+    console.log(data);
+
+   if (data.message === "Login exitoso") {
+  // Guardar usuario
+  await AsyncStorage.setItem("user", JSON.stringify(data.user));
+
+  router.replace("/home");
+} else {
+      alert("Credenciales incorrectas");
+    }
+
+  } catch (error) {
+    console.log("Error:", error);
+    alert("Error de conexión");
+  }
+
   };
 
   return (
