@@ -5,8 +5,7 @@ import { useRouter } from "expo-router";
 export default function Home() {
   const router = useRouter();
 
-  // Control para mostrar/ocultar botones extra
-  const showExtraButtons = false; // ← cámbialo a true si quieres que aparezcan
+  
 
   return (
     <ScrollView style={styles.container}>
