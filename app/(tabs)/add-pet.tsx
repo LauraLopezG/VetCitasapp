@@ -1,54 +1,56 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from "react-native";
-import { useRouter } from "expo-router";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
 
 export default function AddPet() {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [age, setAge] = useState("");
-  const [weight, setWeight] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [tipo, setTipo] = useState("");
+  const [edad, setEdad] = useState("");
+  const [peso, setPeso] = useState("");
+  const [usuarioId, setUsuarioId] = useState("");
 
-  const handleSavePet = () => {
-    router.replace("/pet-added"); // navega a confirmación
+  const handleCreate = () => {
+    fetch("http://192.168.0.23/vetcitas_api/api/mascotas/create.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nombre,
+        tipo,
+        edad,
+        peso,
+        usuario_id: usuarioId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Mascota creada correctamente");
+          setNombre("");
+          setTipo("");
+          setEdad("");
+          setPeso("");
+          setUsuarioId("");
+        } else {
+          alert("Error: " + data.error);
+        }
+      })
+      .catch((err) => console.error(err));
   };
 
   return (
     <View style={styles.container}>
-      {/* Logo arriba */}
       <Image source={require("../../assets/datos.png")} style={styles.icon} />
-
       <Text style={styles.title}>Datos de la mascota</Text>
       <Text style={styles.subtitle}>Completa la información de tu mascota 🐶🐱</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre de la mascota"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Tipo de mascota"
-        value={type}
-        onChangeText={setType}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Edad"
-        value={age}
-        onChangeText={setAge}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Peso"
-        value={weight}
-        onChangeText={setWeight}
-      />
+      <TextInput placeholder="Nombre" style={styles.input} value={nombre} onChangeText={setNombre} />
+      <TextInput placeholder="Tipo" style={styles.input} value={tipo} onChangeText={setTipo} />
+      <TextInput placeholder="Edad" style={styles.input} value={edad} onChangeText={setEdad} />
+      <TextInput placeholder="Peso" style={styles.input} value={peso} onChangeText={setPeso} />
+      <TextInput placeholder="ID Usuario" style={styles.input} value={usuarioId} onChangeText={setUsuarioId} />
 
-      <Pressable style={styles.button} onPress={handleSavePet}>
-        <Text style={styles.buttonText}>Guardar mascota</Text>
-      </Pressable>
+      <TouchableOpacity style={styles.button} onPress={handleCreate}>
+        <Text style={styles.buttonText}>Guardar Mascota</Text>
+      </TouchableOpacity>
     </View>
   );
 }
