@@ -1,121 +1,139 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
+  TextInput,
   TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
+import { useRouter } from "expo-router";
 
-type Mascota = {
-  id: number;
-  nombre: string;
-  tipo: string;
-  edad: string;
-  peso: string;
-  usuario_id: number;
-};
+export default function AddPet() {
+  const router = useRouter();
 
-export default function MyPets({ navigation }: any) {
-  const [mascotas, setMascotas] = useState<Mascota[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [nombre, setNombre] = useState("");
+  const [tipo, setTipo] = useState("");
+  const [edad, setEdad] = useState("");
+  const [peso, setPeso] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const usuarioId = 1;
+  const API_URL =
+    "http://192.168.0.23/vetcitas_api/api/mascotas/create.php";
 
-  const getMascotas = async () => {
+  const handleCreate = async () => {
+    if (!nombre || !tipo || !edad || !peso) {
+      Alert.alert("Error", "Completa todos los campos");
+      return;
+    }
+
+    const payload = {
+      nombre: nombre.trim(),
+      tipo: tipo.trim(),
+      edad: Number(edad),
+      peso: Number(peso),
+      usuario_id: 1,
+    };
+
+    console.log("ENVIANDO:", payload);
+
+    setLoading(true);
+
     try {
-      const res = await fetch(
-        `http://192.168.0.23/vetcitas_api/api/mascotas/read.php?usuario_id=${usuarioId}`
-      );
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-      const data = await res.json();
+      const text = await res.text();
+      console.log("RESPUESTA RAW:", text);
 
-      // 🔥 validar que sea array
-      if (Array.isArray(data)) {
-        setMascotas(data);
+      const data = JSON.parse(text);
+
+      if (data.success) {
+        Alert.alert("OK", "Mascota creada 🐶");
+        setNombre("");
+        setTipo("");
+        setEdad("");
+        setPeso("");
+
+        router.push("/(tabs)/pets");
       } else {
-        console.log("Error backend:", data);
-        setMascotas([]);
+        Alert.alert("Error", data.error || "No se pudo guardar");
       }
     } catch (error) {
-      console.error("Error conexión:", error);
+      console.log(error);
+      Alert.alert("Error", "Fallo de conexión");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    getMascotas();
-  }, []);
-
-  if (loading) {
-    return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
-  }
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mis Mascotas 🐾</Text>
+      <Text style={styles.title}>Nueva Mascota</Text>
 
-      <FlatList<Mascota>
-        data={mascotas}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              navigation.navigate("PetDetail", { mascota: item })
-            }
-          >
-            <Text style={styles.name}>{item.nombre}</Text>
-            <Text>Tipo: {item.tipo}</Text>
-            <Text>Edad: {item.edad}</Text>
-            <Text>Peso: {item.peso} kg</Text>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={
-          <Text style={{ textAlign: "center", marginTop: 20 }}>
-            No tienes mascotas registradas 🐶
-          </Text>
-        }
+      <TextInput
+        placeholder="Nombre"
+        style={styles.input}
+        value={nombre}
+        onChangeText={setNombre}
       />
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("AddPet")}
-      >
-        <Text style={styles.buttonText}>+ Nueva Mascota</Text>
+      <TextInput
+        placeholder="Tipo"
+        style={styles.input}
+        value={tipo}
+        onChangeText={setTipo}
+      />
+
+      <TextInput
+        placeholder="Edad"
+        style={styles.input}
+        value={edad}
+        onChangeText={setEdad}
+        keyboardType="numeric"
+      />
+
+      <TextInput
+        placeholder="Peso"
+        style={styles.input}
+        value={peso}
+        onChangeText={setPeso}
+        keyboardType="numeric"
+      />
+
+      <TouchableOpacity style={styles.button} onPress={handleCreate}>
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Guardar</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#E8F5E9" },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#2E7D32",
-    marginBottom: 15,
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
+  container: { flex: 1, padding: 20, justifyContent: "center" },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 20 },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
     marginBottom: 10,
-    elevation: 3,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#2E7D32",
+    borderRadius: 8,
   },
   button: {
     backgroundColor: "#2E7D32",
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: "center",
-    marginTop: 15,
   },
-  buttonText: { color: "#fff", fontSize: 16 },
+  buttonText: { color: "#fff", fontWeight: "bold" },
 });
