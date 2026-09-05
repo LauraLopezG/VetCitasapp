@@ -1,0 +1,17 @@
+{
+  "name": "VetCitas - Cuidado de mascotas",
+  "short_name": "VetCitas",
+  "description": "Aplicación para gestionar mascotas y citas veterinarias.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#E8F5E9",
+  "theme_color": "#2E7D32",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
